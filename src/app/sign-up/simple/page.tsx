@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 
-export default function SignUpPage() {
+export default function SimpleSignUpPage() {
   const { isLoaded, signUp, setActive } = useSignUp()
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
@@ -30,11 +30,12 @@ export default function SignUpPage() {
         redirectUrlComplete: '/dashboard',
       })
     } catch (err: any) {
+      console.error('Google sign-up error:', err)
       setError(err.errors?.[0]?.longMessage || 'Failed to sign up with Google')
     }
   }
 
-  // Handle email/password sign-up
+  // Handle email/password sign-up (minimal - email and password only)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!isLoaded || !signUp) return
@@ -43,8 +44,7 @@ export default function SignUpPage() {
     setError('')
 
     try {
-      // Start the sign-up process using email and password only
-      // This is the standard approach according to Clerk documentation
+      // Create sign-up with only email and password (guaranteed to work)
       await signUp.create({
         emailAddress: email,
         password,
@@ -57,7 +57,7 @@ export default function SignUpPage() {
 
       setVerifying(true)
     } catch (err: any) {
-      console.error('Sign-up error:', err)
+      console.error('Simple sign-up error:', err)
       setError(err.errors?.[0]?.longMessage || 'Sign-up failed. Please try again.')
     } finally {
       setIsLoading(false)
@@ -93,6 +93,7 @@ export default function SignUpPage() {
         setError('Verification failed. Please try again.')
       }
     } catch (err: any) {
+      console.error('Verification error:', err)
       setError(err.errors?.[0]?.longMessage || 'Verification failed. Please try again.')
     } finally {
       setIsLoading(false)
@@ -112,12 +113,12 @@ export default function SignUpPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">
-            {verifying ? 'Verify your email' : 'Create Account'}
+            {verifying ? 'Verify your email' : 'Simple Sign Up'}
           </CardTitle>
           <CardDescription>
             {verifying
               ? 'Enter the verification code sent to your email'
-              : 'Quick sign up with email and password'}
+              : 'Quick sign up - email and password only'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -209,7 +210,7 @@ export default function SignUpPage() {
                 </div>
               </div>
 
-              {/* Email/Password Form - Standard Clerk flow */}
+              {/* Simple Email/Password Form */}
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
@@ -267,9 +268,13 @@ export default function SignUpPage() {
               </div>
 
               <div className="text-center">
-                <p className="text-xs text-muted-foreground">
-                  Profile information can be added after sign-up
-                </p>
+                <Button
+                  variant="link"
+                  className="text-xs text-muted-foreground"
+                  onClick={() => router.push('/sign-up')}
+                >
+                  Want to add your name? Use full sign-up form
+                </Button>
               </div>
             </>
           )}

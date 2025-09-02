@@ -32,9 +32,9 @@ CLERK_SECRET_KEY=sk_test_your_secret_key_here
 NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 
-# URL to redirect to after signing in (already configured)
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
+# URL to redirect to after signing in (updated to use new prop names)
+NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/dashboard
+NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/dashboard
 ```
 
 ## Step 3: Configure Google OAuth (Optional)
@@ -90,6 +90,7 @@ To enable Google sign-in, you need to configure Google OAuth:
 - `/` - Home page (redirects based on auth status)
 - `/sign-in/[[...sign-in]]` - Custom sign-in page with Google OAuth and email/password
 - `/sign-up/[[...sign-up]]` - Custom sign-up page with Google OAuth and email/password
+- `/sign-up/simple` - Simplified sign-up page (email/password only, no name fields)
 - `/sign-in/sso-callback` - OAuth callback for sign-in
 - `/sign-up/sso-callback` - OAuth callback for sign-up
 - `/dashboard` - Protected dashboard page
@@ -128,6 +129,19 @@ The middleware protects the following routes:
 4. **User data not showing**
    - Ensure you're using the `useUser` hook from `@clerk/nextjs`
    - Check that the ClerkProvider wraps your application
+
+5. **"first_name is not a valid parameter" error during sign-up**
+   - This means your Clerk app isn't configured to collect first/last names
+   - Solution 1: Use the simplified sign-up page at `/sign-up/simple` (email/password only)
+   - Solution 2: Configure your Clerk Dashboard:
+     - Go to "User & Authentication" → "Personal Information"
+     - Enable "First name" and "Last name" collection
+   - The main sign-up form now makes name fields optional to prevent this error
+
+6. **Deprecated "afterSignInUrl" prop warning**
+   - Update your `.env.local` to use the new environment variable names:
+   - `NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL` instead of `NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL`
+   - `NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL` instead of `NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL`
 
 ### Development vs Production
 
