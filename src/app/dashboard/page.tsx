@@ -1,3 +1,5 @@
+import { auth } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
 import { AppSidebar } from "@/components/app-sidebar"
 import { ChartAreaInteractive } from "@/components/chart-area-interactive"
 import { RecruitmentDataTable } from "@/components/recruitment-data-table"
@@ -10,7 +12,13 @@ import {
 
 import data from "./recruitment-data.json"
 
-export default function Page() {
+export default async function Page() {
+  const { userId } = await auth()
+  
+  if (!userId) {
+    redirect('/sign-in')
+  }
+
   return (
     <SidebarProvider
       style={
